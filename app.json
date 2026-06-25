@@ -1,0 +1,99 @@
+{
+  "configVersion": "v3",
+  "app": {
+    "appId": 21001,
+    "appName": "Quotable",
+    "appType": "app",
+    "version": {
+      "code": 1,
+      "name": "1.0.0"
+    },
+    "icon": "icon.png",
+    "vender": "zepp",
+    "description": "Random quotes from the Quotable API"
+  },
+  "permissions": [
+    "data:os.device.info",
+    "device:os.local_storage",
+    "device:os.notification",
+    "device:os.alarm"
+  ],
+  "runtime": {
+    "apiVersion": {
+      "compatible": "4.0",
+      "target": "4.2",
+      "minVersion": "4.0"
+    }
+  },
+  "targets": {
+    "bip6": {
+      "module": {
+        "app-side": {
+          "path": "app-side/index"
+        },
+        "setting": {
+          "path": "setting/index"
+        },
+        "page": {
+          "pages": ["page/index/index.page"]
+        },
+        "app-service": {
+          "services": ["app-service/quote_notifier"]
+        }
+      },
+      "platforms": [
+        {
+          "name": "bip6v1",
+          "deviceSource": 9765120
+        },
+        {
+          "name": "bip6v2",
+          "deviceSource": 9765121
+        },
+        {
+          "name": "bip6v3",
+          "deviceSource": 10158337
+        }
+      ],
+      "designWidth": 390
+    },
+    "active_2_square": {
+      "module": {
+        "app-side": {
+          "path": "app-side/index"
+        },
+        "setting": {
+          "path": "setting/index"
+        },
+        "page": {
+          "pages": ["page/index/index.page"]
+        },
+        "app-service": {
+          "services": ["app-service/quote_notifier"]
+        }
+      },
+      "platforms": [
+        {
+          "name": "a2s1",
+          "deviceSource": 10223872
+        },
+        {
+          "name": "a2s2",
+          "deviceSource": 10223873
+        },
+        {
+          "name": "a2s3",
+          "deviceSource": 10223875
+        }
+      ],
+      "designWidth": 390
+    }
+  },
+  "i18n": {
+    "en-US": {
+      "appName": "Quotable"
+    }
+  },
+  "defaultLanguage": "en-US",
+  "debug": false
+}
