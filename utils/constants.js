@@ -14,11 +14,17 @@ export const DEFAULT_SETTINGS = {
 export const MESSAGE_METHOD = {
   FETCH_QUOTE: 'FETCH_QUOTE',
   CACHE_QUOTE: 'CACHE_QUOTE',
+  CACHE_QUOTES: 'CACHE_QUOTES',
   SYNC_SETTINGS: 'SYNC_SETTINGS'
 }
 
+// Number of quotes prefetched for notifications. The API accepts only
+// 10, 25, 50 or 100. 100 trimmed quotes is roughly 13 KB over BLE.
+export const QUOTE_BATCH_SIZE = 100
+
 export const FS_PATHS = {
   QUOTE_CACHE: 'quote_cache.json',
+  QUOTE_QUEUE: 'quote_queue.json',
   ALARM_ID: 'alarm_id.json',
   DEVICE_SETTINGS: 'device_settings.json'
 }

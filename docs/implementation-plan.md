@@ -28,8 +28,12 @@ means this rule was broken.
 ## Data flow
 
 1. **Manual refresh:** Device page → Side Service `FETCH_QUOTE` → API → display + cache
-2. **Settings change:** Settings App → Settings Storage → Side Service → `SYNC_SETTINGS` + `CACHE_QUOTE` to watch
-3. **Periodic notification:** Alarm API → App Service → read cache → `notify()`
+2. **Settings change / app open:** Settings App → Settings Storage → Side Service → `SYNC_SETTINGS` + `CACHE_QUOTES` (batch of 100) to watch → `quote_queue.json`
+3. **Periodic notification:** Alarm API → App Service → rotate next quote from `quote_queue.json` (fallback: `quote_cache.json`) → `notify()`
+
+The App Service has no network access and cannot message the Side Service,
+so notifications can only show prefetched quotes. The queue is refilled every
+time the app is opened or the notification settings change.
 
 ## Settings storage keys
 
@@ -38,7 +42,8 @@ means this rule was broken.
 
 ## Local FS files
 
-- `quote_cache.json` — cached quote for notifications and offline fallback
+- `quote_cache.json` — last displayed/notified quote, offline fallback
+- `quote_queue.json` — prefetched quotes, rotated one per notification
 - `alarm_id.json` — persisted alarm ID
 - `device_settings.json` — last synced notification settings on watch
 

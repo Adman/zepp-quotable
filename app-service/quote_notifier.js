@@ -2,13 +2,30 @@ import { notify } from '@zos/notification'
 import { getSystemMode } from '@zos/settings'
 import { log as Logger } from '@zos/utils'
 import { PAGE_PATH } from '../utils/constants'
-import { readCachedQuote } from '../utils/quote'
+import {
+  readCachedQuote,
+  takeNextQueuedQuote,
+  writeCachedQuote
+} from '../utils/quote'
 
 const logger = Logger.getLogger('quote-notifier')
 
 function shouldSkipNotification() {
   const mode = getSystemMode()
   return mode.DND || mode.sleep || mode.theater
+}
+
+// Take the next quote from the prefetched queue (it cycles once exhausted);
+// fall back to the last cached quote if nothing was ever prefetched.
+function pickQuote() {
+  const queued = takeNextQueuedQuote()
+  if (queued) {
+    // Remember it so "Open" shows the same quote the notification did.
+    writeCachedQuote(queued)
+    return queued
+  }
+  logger.log('quote queue empty, falling back to cached quote')
+  return readCachedQuote()
 }
 
 AppService({
@@ -20,15 +37,15 @@ AppService({
       return
     }
 
-    const cached = readCachedQuote()
-    if (!cached) {
-      logger.log('no cached quote available')
+    const quote = pickQuote()
+    if (!quote) {
+      logger.log('no quote available')
       return
     }
 
     notify({
-      title: cached.author,
-      content: cached.content,
+      title: quote.author,
+      content: quote.content,
       actions: [
         {
           text: 'Open',

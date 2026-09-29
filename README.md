@@ -47,7 +47,7 @@ The app uses three Zepp OS modules:
 - **Side Service** — HTTP fetch via the phone's network
 - **Settings App** — notification toggle and interval in the Zepp app
 
-Quotes for periodic notifications are cached on the watch because App Service wake-ups are limited to 600ms (no network in that path). The Side Service prefetches quotes and pushes them to the watch over BLE.
+The App Service that sends periodic notifications has no network access, so the Side Service prefetches a batch of 100 quotes and pushes them to the watch over BLE whenever the app is opened or the notification settings change. Each notification takes the next quote from that queue and moves it to the back, so the batch cycles if the app is not opened for a long time.
 
 ## Settings
 

@@ -4,7 +4,11 @@ import { log as Logger } from '@zos/utils'
 import { BasePage } from '@zeppos/zml/base-page'
 import { MESSAGE_METHOD } from '../../utils/constants'
 import { applyNotificationSettings } from '../../utils/alarm'
-import { readCachedQuote, writeCachedQuote } from '../../utils/quote'
+import {
+  readCachedQuote,
+  writeCachedQuote,
+  writeQuoteQueue
+} from '../../utils/quote'
 import {
   AUTHOR_GAP,
   AUTHOR_TEXT,
@@ -276,6 +280,11 @@ Page(
 
       if (req.method === MESSAGE_METHOD.CACHE_QUOTE && req.data) {
         writeCachedQuote(req.data)
+        return
+      }
+
+      if (req.method === MESSAGE_METHOD.CACHE_QUOTES && req.data && req.data.quotes) {
+        writeQuoteQueue(req.data.quotes)
         return
       }
 

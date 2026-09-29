@@ -6,7 +6,10 @@ import {
 } from '../utils/constants'
 // NOTE: only import device-agnostic helpers here. Anything that pulls in
 // @zos/* device modules will crash the side service at load time.
-import { fetchRandomQuoteFromApi } from '../utils/quote-api'
+import {
+  fetchRandomQuoteFromApi,
+  fetchRandomQuotesFromApi
+} from '../utils/quote-api'
 
 const LOG_PREFIX = '[quotable-side]'
 
@@ -44,15 +47,19 @@ async function pushSettingsToDevice(service) {
   }
 }
 
+// Prefetch a batch of quotes and push it to the watch. The notification
+// service pops one per alarm, so the watch does not need the phone at
+// notification time.
 async function pushQuoteCache(service) {
   try {
-    const quote = await fetchRandomQuoteFromApi()
+    const quotes = await fetchRandomQuotesFromApi()
     service.call({
-      method: MESSAGE_METHOD.CACHE_QUOTE,
-      data: quote
+      method: MESSAGE_METHOD.CACHE_QUOTES,
+      data: { quotes }
     })
+    log('pushed quote batch', quotes.length)
   } catch (error) {
-    logError('failed to prefetch quote', error && error.message ? error.message : error)
+    logError('failed to prefetch quotes', error && error.message ? error.message : error)
   }
 }
 
