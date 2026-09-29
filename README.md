@@ -64,7 +64,8 @@ app-side/index.js   Fetch API + settings sync
 app-service/        Alarm-triggered notification sender
 page/index/         Quote display page
 setting/index.js    Mobile settings UI
-utils/              Constants, quote parsing, alarm helpers, FS cache
+utils/quote-api.js  Quote fetch + parse (shared, no device imports)
+utils/              Constants, alarm helpers, FS cache (device only)
 ```
 
 ## API

@@ -12,6 +12,18 @@ This document summarizes the implemented architecture.
 | Side Service | `app-side/index.js` | HTTP fetch, settings listener, push cache to watch |
 | Settings App | `setting/index.js` | Toggle notifications, interval selector |
 | App Service | `app-service/quote_notifier.js` | Read FS cache, send system notification |
+| Shared (device + side) | `utils/quote-api.js`, `utils/constants.js` | Pure helpers with no `@zos/*` imports |
+| Device-only utils | `utils/quote.js`, `utils/fs.js`, `utils/alarm.js` | FS cache and alarm helpers (use `@zos/*`) |
+
+## Side Service import rule
+
+The Side Service runs on the phone and has no `@zos/fs`, `@zos/utils`, etc.
+Importing any device-only module there (even indirectly) throws at load time
+and the service never registers, so every `request()` from the watch fails.
+`app-side/index.js` must only import from `utils/quote-api.js` and
+`utils/constants.js`. A `zeus build` warning of the form
+`"@zos/..." is imported by ".../app-side/index.js", but could not be resolved`
+means this rule was broken.
 
 ## Data flow
 

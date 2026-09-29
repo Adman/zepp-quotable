@@ -1,14 +1,22 @@
-import { BaseSideService } from '@zeppos/zml/base-side'
-import { settingsLib } from '@zeppos/zml/base-side'
-import { log as Logger } from '@zos/utils'
+import { BaseSideService, settingsLib } from '@zeppos/zml/base-side'
 import {
   DEFAULT_SETTINGS,
   MESSAGE_METHOD,
   SETTINGS_KEYS
 } from '../utils/constants'
-import { fetchRandomQuoteFromApi } from '../utils/quote'
+// NOTE: only import device-agnostic helpers here. Anything that pulls in
+// @zos/* device modules will crash the side service at load time.
+import { fetchRandomQuoteFromApi } from '../utils/quote-api'
 
-const logger = Logger.getLogger('quotable-side')
+const LOG_PREFIX = '[quotable-side]'
+
+function log(...args) {
+  console.log(LOG_PREFIX, ...args)
+}
+
+function logError(...args) {
+  console.error(LOG_PREFIX, ...args)
+}
 
 function readSettings() {
   const enabled =
@@ -44,17 +52,17 @@ async function pushQuoteCache(service) {
       data: quote
     })
   } catch (error) {
-    logger.error('failed to prefetch quote', error)
+    logError('failed to prefetch quote', error && error.message ? error.message : error)
   }
 }
 
 AppSideService(
   BaseSideService({
     onInit() {
-      logger.log('side service onInit')
+      log('side service onInit')
     },
     async onRequest(req, res) {
-      const { method } = req
+      const method = req && req.method
 
       if (method === MESSAGE_METHOD.SYNC_SETTINGS) {
         const settings = readSettings()
@@ -68,13 +76,9 @@ AppSideService(
       if (method === MESSAGE_METHOD.FETCH_QUOTE) {
         try {
           const quote = await fetchRandomQuoteFromApi()
-          this.call({
-            method: MESSAGE_METHOD.CACHE_QUOTE,
-            data: quote
-          })
           res(null, { result: quote })
         } catch (error) {
-          logger.error('fetch quote failed', error)
+          logError('fetch quote failed', error && error.message ? error.message : error)
           res({ message: 'Failed to fetch quote' }, null)
         }
         return
@@ -92,7 +96,7 @@ AppSideService(
     },
     onRun() {},
     onDestroy() {
-      logger.log('side service onDestroy')
+      log('side service onDestroy')
     }
   })
 )
